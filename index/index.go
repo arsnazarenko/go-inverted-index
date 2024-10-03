@@ -20,7 +20,7 @@ type Document struct {
 	Text string
 }
 
-func NewInMemoryIndex() (*InvertedIndex, error) {
+func NewInvertedIndex() (*InvertedIndex, error) {
 	return &InvertedIndex{
 		docs:  []Document{},
 		index: make(map[string]PostingList),
@@ -28,12 +28,12 @@ func NewInMemoryIndex() (*InvertedIndex, error) {
 }
 
 // Строим индекс в памяти
-func NewInMemoryIndexFrom(docs []Document) (*InvertedIndex, error) {
+func NewInvertedIndexFrom(docs []Document) (*InvertedIndex, error) {
 	if len(docs) == 0 {
 		return nil, fmt.Errorf("docs len in 0")
 	}
 
-	inmem, err := NewInMemoryIndex()
+	inmem, err := NewInvertedIndex()
 	if err != nil {
 		return nil, err
 	}

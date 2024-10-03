@@ -1,6 +1,8 @@
 package index
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,7 +16,7 @@ func TestIndexSearch(t *testing.T) {
         {DID: 2, Text: "This is a third document."},
         {DID: 3, Text: "This is a new document for test"},
 	}
-    inmem, err := NewInMemoryIndex()
+    inmem, err := NewInvertedIndex()
     if err != nil { panic(err) }
     for _, d := range documents {
         inmem.AddDocument(d)
@@ -98,8 +100,81 @@ func TestIndexSearch(t *testing.T) {
 
 }
 
+func BenchmarkIndexSearch(b *testing.B) {
+    b.Run("Search query single term", func(b *testing.B) {
+        in, err := NewInvertedIndex()
+        if err != nil {
+            b.Fatal(err)
+        }
+        
+        for i := 0; i < b.N; i++ {
+            in.AddDocument(Document{
+            	DID:  DocumentID(i),
+            	Text: fmt.Sprintf("term_%d hello world", i),
+            })
+        }
+        b.ResetTimer()
+        for i := 0; i < b.N; i++ {
+            in.Search(fmt.Sprintf("term_%d", i))
+        }
+    })
+    b.Run("Search query term && term", func(b *testing.B) {
+        in, err := NewInvertedIndex()
+        if err != nil {
+            b.Fatal(err)
+        }
+        
+        for i := 0; i < b.N; i++ {
+            in.AddDocument(Document{
+            	DID:  DocumentID(i),
+            	Text: fmt.Sprintf("term_%d hello world", i),
+            })
+        }
+        b.ResetTimer()
+        for i := 0; i < b.N; i++ {
+            Or(in.Search(fmt.Sprintf("term_%d", i)), in.Search(fmt.Sprintf("term_%d", i + 1)))
+        }
+    })
+    b.Run("Search query (term || term) && term", func(b *testing.B) {
+        in, err := NewInvertedIndex()
+        if err != nil {
+            b.Fatal(err)
+        }
+        
+        for i := 0; i < b.N; i++ {
+            in.AddDocument(Document{
+            	DID:  DocumentID(i),
+            	Text: fmt.Sprintf("term_%d hello world", i),
+            })
+        }
+        b.ResetTimer()
+        for i := 0; i < b.N; i++ {
+            And(Or(in.Search(fmt.Sprintf("term_%d", i)), in.Search(fmt.Sprintf("term_%d", i + 1))), in.Search(fmt.Sprintf("term_%d", i + 2)))
+        }
+    })
+}
+
+func BenchmarkIndexAddDocument(b *testing.B) {
+    var s strings.Builder
+    for i := 0; i < 5; i++ {
+        s.WriteString(fmt.Sprintf("term_%d term_%d term_%d ", i, i+1, i+2))
+    }
+    in, err := NewInvertedIndex()
+    if err != nil {
+        b.Fatal(err)
+    }
+
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        in.AddDocument(Document{
+        	DID:  DocumentID(i),
+        	Text: s.String(),
+        })
+    }
+}
 
 func TestIndexSaveLoad(t *testing.T) {
+    
 
 }
 

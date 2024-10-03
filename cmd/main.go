@@ -14,7 +14,7 @@ func main() {
         {DID: 2, Text: "This is a third document."},
         {DID: 3, Text: "This is a new document for test"},
 	}
-    inmem, err := index.NewInMemoryIndex()
+    inmem, err := index.NewInvertedIndex()
     if err != nil { panic(err) }
     for _, d := range documents {
         fmt.Printf("%d: %s\n", d.DID, d.Text)
