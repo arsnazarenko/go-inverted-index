@@ -34,7 +34,7 @@ func Or(it1, it2 *Iterator) *Iterator {
 }
 
 func And(it1, it2 *Iterator) *Iterator {
-    res := intersectSlices(it1.pl, it2.pl)
+	res := intersectSlices(it1.pl, it2.pl)
 	return &Iterator{
 		index: it1.index,
 		pl:    res,
@@ -44,11 +44,11 @@ func And(it1, it2 *Iterator) *Iterator {
 }
 
 func Not(it *Iterator) *Iterator {
-    fullDocsPl := make(PostingList, 0, len(it.index.docs))
-    for _, d := range it.index.docs {
-        fullDocsPl = append(fullDocsPl, d.DID)
-    }
-    res := subtractSlices(it.pl, fullDocsPl)
+	fullDocsPl := make(PostingList, 0, len(it.index.docs))
+	for _, d := range it.index.docs {
+		fullDocsPl = append(fullDocsPl, d.DID)
+	}
+	res := subtractSlices(it.pl, fullDocsPl)
 	return &Iterator{
 		index: it.index,
 		pl:    res,

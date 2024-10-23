@@ -7,6 +7,7 @@ import (
 // Постинг лист - список документов, содержащих данный терм
 type DocumentID int
 type PostingList []DocumentID
+
 // Кодирование PostingList с помощью pForDelta
 func (pl PostingList) Encode() []byte {
 	var (
@@ -28,10 +29,10 @@ func (pl PostingList) Encode() []byte {
 }
 
 // Декодирование PostingList с помощью pForDelta
-func (pl *PostingList) Decode(data []byte) int{
-    if len(data) == 0 {
-        return -1
-    }
+func (pl *PostingList) Decode(data []byte) int {
+	if len(data) == 0 {
+		return -1
+	}
 	var tmpId uint64 = 0
 	var tmpN int = 0
 
@@ -46,5 +47,5 @@ func (pl *PostingList) Decode(data []byte) int{
 		id += tmpId
 		*pl = append(*pl, DocumentID(id))
 	}
-    return n
+	return n
 }
